@@ -32,3 +32,8 @@
 *.exe
 *.out
 *.app
+
+# Imagens geradas
+*.ppm
+
+RTDClientTest
