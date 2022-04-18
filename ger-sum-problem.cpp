@@ -53,6 +53,21 @@ std::vector<char> how_many_different_characters(const std::string &word) {
 }
 
 /**
+ * @brief Retorna o valor numérico para uma letra.
+ *
+ * @param c Letra a ser analisada.
+ * @param characters Indice de cada letra.
+ * @param values Valor numérico para cada letra.
+ * @return int Valor numérico da letra -> algarismo.
+ */
+inline int get_value_for_character(const char &c,
+                                   const std::vector<char> &characters,
+                                   const std::vector<int> &values) {
+    return values[std::find(characters.begin(), characters.end(), c) -
+                  characters.begin()];
+}
+
+/**
  * @brief Função que retorna um valor numérico para uma palavra dando-se o valor
  * de cada letra
  *
@@ -67,10 +82,8 @@ inline std::uint64_t get_value_for_word(const std::string &word,
     std::uint64_t value = 0;
     int digits = 0;
     for (int i = word.size() - 1; i >= 0; i--) {
-        value +=
-            values[std::find(characters.begin(), characters.end(), word[i]) -
-                   characters.begin()] *
-            std::pow(10, digits);
+        value += get_value_for_character(word[i], characters, values) *
+                 std::pow(10, digits);
         digits++;
     }
     return value;
@@ -147,11 +160,12 @@ bool check_for_possible_combination(const std::string &word,
             // Faz todas as permutações de algarismos com os algarismos
             // selecionados.
 
-            // Verifica se foi atribuido 0 a primeira letra de cada palavra. Se
-            // não for, a permutação é válida.
-            if (!(values[word[0]] == 0 || values[word2[0]] == 0 ||
-                  values[result[0]] == 0)) {
-                // Aqui a permutação é válida, vamos ver se resolve a equação
+            // Verifica se foi atribuido 0 a primeira letra de cada palavra.
+            // Se não for, a permutação é válida.
+            if (get_value_for_character(word[0], all_chars, values) != 0 &&
+                get_value_for_character(word2[0], all_chars, values) != 0 &&
+                get_value_for_character(result[0], all_chars, values) != 0) {
+
                 val1 = get_value_for_word(word, all_chars, values);
                 val2 = get_value_for_word(word2, all_chars, values);
                 result_val = get_value_for_word(result, all_chars, values);
@@ -169,12 +183,15 @@ bool check_for_possible_combination(const std::string &word,
 int main(int argc, char *argv[]) {
     std::vector<std::string> words;
 
+    // Se apenas 1 argumento foi passado, tratamos como o nome do arquivo de
+    // entrada
     if (argc == 2) {
         if (load_words_from_file(argv[1], words)) {
             std::clog << words.size() << " palavras carregadas do arquivo ["
                       << argv[1] << "]." << std::endl;
         }
     } else if (argc > 2) {
+        // Se mais de 1 argumento foi passado, tratamos como lista de palavras
         for (int i = 1; i < argc; i++) {
             words.push_back(argv[i]);
         }
@@ -182,6 +199,8 @@ int main(int argc, char *argv[]) {
                   << std::endl;
     }
 
+    // Se não temos nenhuma palavra, ou não foi conseguimos ler o arquivo ou não
+    // foi passado argumento algum. Então usamos uma lista fixa
     if (words.size() == 0) {
         words.push_back("FARINHA");
         words.push_back("BATATA");
