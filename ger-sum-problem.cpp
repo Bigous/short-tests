@@ -200,23 +200,11 @@ int main(int argc, char *argv[]) {
     }
 
     // Se não temos nenhuma palavra, ou não foi conseguimos ler o arquivo ou não
-    // foi passado argumento algum. Então usamos uma lista fixa
+    // foi passado argumento algum. Então vamos mostrar o menu de ajuda.
     if (words.size() == 0) {
-        words.push_back("FARINHA");
-        words.push_back("BATATA");
-        words.push_back("ARROZ");
-        words.push_back("FEIJAO");
-        words.push_back("BETERRABA");
-        words.push_back("QUIABO");
-        words.push_back("MARMITA");
-        words.push_back("FESTANCA");
-        words.push_back("CORDEIRO");
-
-        std::clog << "As palavras [" << std::endl;
-        for (const auto &w : words) {
-            std::clog << "  " << w << "," << std::endl;
-        }
-        std::clog << "] foram carregadas como padrão." << std::endl;
+        std::clog << "Uso 1: " << argv[0] << " <arquivo_de_entrada>" << std::endl;
+        std::clog << "Uso 2: " << argv[0] << " <PALAVRA1> <PALAVRA2> [PALAVRA...]" << std::endl;
+        return 1;
     }
     // Lista de palavras em pt-BR extraída de:
     // https://www.ime.usp.br/~pf/dicios/index.html
@@ -242,7 +230,7 @@ int main(int argc, char *argv[]) {
             });
     } catch (const std::exception &e) {
         std::cerr << "Erro: " << e.what() << std::endl;
-        return 1;
+        return 2;
     }
     return 0;
 }
