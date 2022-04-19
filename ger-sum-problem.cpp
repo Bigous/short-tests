@@ -26,8 +26,9 @@ bool load_words_from_file(const std::string &file_name,
             // Já transforma tudo pra uppercase para que não haja diferença
             // entre maiúsculas e minúsculas nos algarismos numéricos. Assim,
             // tratamos 'a' e 'A' como iguais.
-            for (char &c : word) {
-                c = static_cast<char>(std::toupper(c));
+            for (auto &c : word) {
+                c = static_cast<std::string::iterator::value_type>(
+                    std::toupper(c));
             }
             words.push_back(word);
         }
@@ -81,9 +82,10 @@ inline std::uint64_t get_value_for_word(const std::string &word,
                                         const std::vector<int> &values) {
     std::uint64_t value = 0;
     int digits = 0;
-    for (std::size_t i = word.size() - 1; i >= 0; i--) {
-        value += static_cast<std::uint64_t>(static_cast<long double>(get_value_for_character(word[i], characters, values)) *
-                 std::pow(10, digits));
+    for (int i = static_cast<int>(word.size() - 1); i >= 0; i--) {
+        value += static_cast<std::uint64_t>(
+            get_value_for_character(word[i], characters, values) *
+            std::pow(10, digits));
         digits++;
     }
     return value;
@@ -128,7 +130,7 @@ bool check_for_possible_combination(const std::string &word,
 
     // A quantidade de algarismos do resultado deve ser igual ao tamanho da
     // maior palavra ou 1 dígito a mais
-    std::size_t max_size = std::max(word.size(), word2.size());
+    auto max_size = std::max(word.size(), word2.size());
     if (result.size() != max_size && result.size() != max_size + 1) {
         return false;
     }
@@ -202,8 +204,10 @@ int main(int argc, char *argv[]) {
     // Se não temos nenhuma palavra, ou não foi conseguimos ler o arquivo ou não
     // foi passado argumento algum. Então vamos mostrar o menu de ajuda.
     if (words.size() == 0) {
-        std::clog << "Uso 1: " << argv[0] << " <arquivo_de_entrada>" << std::endl;
-        std::clog << "Uso 2: " << argv[0] << " <PALAVRA1> <PALAVRA2> [PALAVRA...]" << std::endl;
+        std::clog << "Uso 1: " << argv[0] << " <arquivo_de_entrada>"
+                  << std::endl;
+        std::clog << "Uso 2: " << argv[0]
+                  << " <PALAVRA1> <PALAVRA2> [PALAVRA...]" << std::endl;
         return 1;
     }
     // Lista de palavras em pt-BR extraída de:
@@ -212,9 +216,9 @@ int main(int argc, char *argv[]) {
         std::for_each(
             std::execution::par_unseq, words.begin(), words.end(),
             [&words](const std::string &word) {
-                std::size_t idx = static_cast<std::size_t>(&word - &words[0]);
+                int idx = static_cast<int>(&word - &words[0]);
                 std::uint64_t val1, val2, res;
-                for (std::size_t i = idx; i < words.size(); i++) {
+                for (int i = idx; i < words.size(); i++) {
                     const std::string &word2 = words[i];
                     for (const std::string &result : words) {
                         if (check_for_possible_combination(word, word2, result,
