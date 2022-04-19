@@ -10,6 +10,8 @@
 				"/EHsc",
 				"/nologo",
 				"/std:c++latest",
+				"/W4",
+				"/WX",
 				"/Fe:",
 				"${fileDirname}\\${fileBasenameNoExtension}.exe",
 				"${file}"
