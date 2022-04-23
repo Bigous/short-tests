@@ -51,7 +51,7 @@ int main() {
 
 void resolve_int() {
     std::string max_str(1000000, '9');
-    mpz_class val("2"), resto("2"), impar_corrente("1"), maximo(max_str);
+    mpz_class resto("2"), impar_corrente("1"), maximo(max_str);
     unsigned int digito=0;
     bool imprimiu_a_virgula = false;
     while(resto > 0 && resto < maximo) {
