@@ -1,8 +1,9 @@
 #include <algorithm>
 #include <execution>
+#include <format>
 #include <fstream>
 #include <iostream>
-#include <sstream>
+//#include <sstream>
 #include <string>
 #include <vector>
 
@@ -213,25 +214,41 @@ int main(int argc, char *argv[]) {
     // Lista de palavras em pt-BR extraída de:
     // https://www.ime.usp.br/~pf/dicios/index.html
     try {
-        std::for_each(
-            std::execution::par_unseq, words.begin(), words.end(),
-            [&words](const std::string &word) {
-                int idx = static_cast<int>(&word - &words[0]);
-                std::uint64_t val1, val2, res;
-                for (int i = idx; i < words.size(); i++) {
-                    const std::string &word2 = words[i];
-                    for (const std::string &result : words) {
-                        if (check_for_possible_combination(word, word2, result,
-                                                           val1, val2, res)) {
-                            std::stringstream ss;
-                            ss << word << " + " << word2 << " = " << result
-                               << "  <--->  " << val1 << " + " << val2 << " = "
-                               << res << std::endl;
-                            std::cout << ss.str();
-                        }
+        // std::for_each(
+        //     std::execution::par_unseq, words.begin(), words.end(),
+        //     [&words](const std::string &word) {
+        //         int idx = static_cast<int>(&word - &words[0]);
+        //         std::uint64_t val1, val2, res;
+        //         for (int i = idx; i < words.size(); i++) {
+        //             const std::string &word2 = words[i];
+        //             for (const std::string &result : words) {
+        //                 if (check_for_possible_combination(word, word2, result,
+        //                                                    val1, val2, res)) {
+        //                     std::cout << std::format(
+        //                         "{} + {} = {}  <--->  {} + {} = {}\n", word,
+        //                         word2, result, val1, val2, res);
+        //                 }
+        //             }
+        //         }
+        //     });
+        #pragma omp parallel for
+        for(int idx = 0; idx < words.size(); idx++) {
+            const std::string &word = words[idx];
+            for (int i = idx; i < words.size(); i++) {
+                const std::string &word2 = words[i];
+                //for (const std::string &result : words) {
+                for(int j = 0; j < words.size(); j++) {
+                    const std::string &result = words[j];
+                    std::uint64_t val1, val2, res;
+                    if (check_for_possible_combination(word, word2, result,
+                                                       val1, val2, res)) {
+                        std::cout << std::format(
+                            "{} + {} = {}  <--->  {} + {} = {}\n", word,
+                            word2, result, val1, val2, res);
                     }
                 }
-            });
+            }
+        }
     } catch (const std::exception &e) {
         std::cerr << "Erro: " << e.what() << std::endl;
         return 2;
