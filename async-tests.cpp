@@ -1,14 +1,14 @@
-#include <functional>
-#include <future>
-#include <iostream>
-#include <limits>
-#include <random>
-#include <string>
-#include <vector>
+#include <functional> // std::function
+#include <future>     // std::async, std::future, std::launch
+#include <iostream>   // std::cout, std::cerr
+#include <limits>     // std::numeric_limits
+#include <random>     // std::random_device, std::default_random_engine, std::uniform_int_distribution
+#include <string>     // std::string, std::stoi
+#include <vector>     // std::vector
 
 auto IsPrime( int value ) -> bool
 {
-	if( ( value != 2 ) && ( ( value & 1 ) != 1 ) ) {
+	if( value < 2 || ( value != 2 ) && ( ( value & 1 ) != 1 ) ) {
 		return false;
 	}
 	for( int i = 3; i < value / 2; i += 2 ) {
