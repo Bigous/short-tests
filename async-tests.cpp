@@ -1,3 +1,4 @@
+#include <functional>
 #include <future>
 #include <iostream>
 #include <limits>
@@ -18,10 +19,23 @@ auto IsPrime( int value ) -> bool
 	return true;
 }
 
-auto HowManyArePrime( int quantity ) -> int
+auto HowManyArePrimeRandom( int quantity ) -> int
 {
 	std::random_device            random_device;
 	std::default_random_engine    random_engine( random_device() );
+	std::uniform_int_distribution get_random_int_possible_prime{ 2, std::numeric_limits< int >::max() };
+	int                           result = 0;
+	for( int i = 0; i < quantity; i++ ) {
+		if( IsPrime( get_random_int_possible_prime( random_engine ) ) ) {
+			++result;
+		}
+	}
+	return result;
+}
+
+auto HowManyArePrimeFixedSequence( int quantity ) -> int
+{
+	std::default_random_engine    random_engine( 42 );
 	std::uniform_int_distribution get_random_int_possible_prime{ 2, std::numeric_limits< int >::max() };
 	int                           result = 0;
 	for( int i = 0; i < quantity; i++ ) {
@@ -37,13 +51,15 @@ auto main( int argc, char *argv[] ) -> int
 	try {
 		std::vector< std::string >        args( argv, argv + argc );
 		int                               value     = std::stoi( args[1] );
-		int                               n_threads = args.size() == 3 ? std::stoi( args[2] ) : 5;
+		int                               n_threads = args.size() >= 3 ? std::stoi( args[2] ) : 5;
 		std::vector< std::future< int > > executions;
+		std::function< int( int ) >       fn_thread =
+		    ( args.size() == 4 ) && ( args[3] == "--fixed" ) ? HowManyArePrimeFixedSequence : HowManyArePrimeRandom;
 
 		executions.reserve( n_threads );
 
 		for( int i = 0; i < n_threads; ++i ) {
-			executions.push_back( std::async( std::launch::async, HowManyArePrime, value ) );
+			executions.push_back( std::async( std::launch::async, fn_thread, value ) );
 			std::cout << "Starting thread: " << i + 1 << std::endl;
 		}
 
