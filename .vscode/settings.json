@@ -101,7 +101,9 @@
         "xutility": "cpp",
         "*.ipp": "cpp",
         "format": "cpp",
-        "stop_token": "cpp"
+        "stop_token": "cpp",
+        "coroutine": "cpp",
+        "resumable": "cpp"
     },
     "cmake.configureOnOpen": true
 }
